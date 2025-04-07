@@ -133,6 +133,10 @@ function exportGalleryStills()
 
     print("Exporting stills to: " .. folderPath)
 
+       -- Get album name for smarter prefix
+    local albumName = gallery:GetAlbumName(currentAlbum) or "Unknown"
+    print("Working with album: " .. albumName)
+
     -- Export all stills
     local exportFormat = "png" -- Options: dpx, cin, tif, jpg, png, ppm, bmp, xpm, drx
     local filePrefix = "still_" -- Prefix for the exported files
