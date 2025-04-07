@@ -26,8 +26,40 @@ if not clips or #clips == 0 then
     print("No clips in the folder.")
     return
 end
-
 print("Found " .. #clips .. " clips in the folder.")
+
+-- sorting function to sort clips by name
+local function sortByName(clips)
+    table.sort(clips, function(a, b)
+        return a:GetName() < b:GetName()
+    end)
+    return clips
+end
+-- sort clips by creation date
+local function sortByCreationDate(clips)
+    table.sort(clips, function(a, b)
+        local aDate = a:GetClipProperty("Creation Date")
+        local bDate = b:GetClipProperty("Creation Date")
+        -- handle cases where dates might not exists
+        if not aDate then
+            return false
+        end
+        if not bDate then
+            return true
+        end
+        -- Last resort fallback to filenames
+        if not aDate or not bDate then
+            return a:GetName() < b:GetName()
+        end
+
+        return aDate < bDate
+    end)
+    return clips
+end
+
+-- choose sorting method
+clips = sortByName(clips)
+ --clips = sortByCreationDate(clips)
 
 -- get current timeline
 local timeline = project:GetCurrentTimeline()
