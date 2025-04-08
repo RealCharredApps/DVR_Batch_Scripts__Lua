@@ -1,6 +1,7 @@
 -- Auto Saver Script for Fusion
 -- This script adds a Saver node after each selected node in the Fusion composition
 -- It automatically names the output file based on the selected node's name and sets up the connection
+
 -- Get the current composition
 local comp = fu:GetCurrentComp()
 
@@ -10,6 +11,13 @@ if not comp then
     return
 end
 
+-- Get the FlowView reference
+local flow = comp.CurrentFrame.FlowView
+if not flow then print("Error: Could not access FlowView") return end
+
+-- Lock the composition to prevent rendering during changes
+comp:Lock()
+
 -- Get the currently selected nodes
 local selected_nodes = comp:GetToolList(true)
 
@@ -17,6 +25,7 @@ local selected_nodes = comp:GetToolList(true)
 print("Selected nodes: " .. #selected_nodes)
 if #selected_nodes == 0 then
     print("Error: No nodes selected")
+    comp:Unlock()
     return
 end
 
@@ -33,6 +42,11 @@ for _, node in ipairs(selected_nodes) do
     -- Get node information
     local nodeName = node:GetAttrs().TOOLS_Name
     print("Creating saver for node: " .. nodeName)
+    
+    -- Get the position of the current node
+    local x, y = flow:GetPos(node)
+    
+    -- Create a new Saver node
     local saver = comp:AddTool("Saver")
 
     -- Set up the Saver node
@@ -45,17 +59,22 @@ for _, node in ipairs(selected_nodes) do
         -- Create and set the output file path
         local filePath = createFilePath(nodeName)
         saver:SetAttrs({
-            TOOLB_Filename = filePath
+            TOOLST_Clip_Name = filePath  -- Corrected attribute
         })
 
         -- Connect the selected node to the Saver's input
         saver.Input = node.Output
-
-        -- Position the saver after the input node (auto-positioning)
-        print("Created Saver for node: " .. nodeName)
+        
+        -- Position the saver to the right of the input node (x+1, same y)
+        flow:SetPos(saver, x, y)
+        
+        print("Created Saver for node: " .. nodeName .. " at position X: " .. (x) .. ", Y: " .. y)
     else
         print("Failed to create Saver for node: " .. nodeName)
     end
 end
+
+-- Unlock the composition
+comp:Unlock()
 
 print("Auto Saver process complete")
