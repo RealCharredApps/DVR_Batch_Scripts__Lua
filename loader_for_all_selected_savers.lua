@@ -26,11 +26,21 @@ else
             local loader = comp:AddTool("Loader", saverX, saverY + loaderY)
             -- set loaders path to the saver clip path
             loader:SetInput("Clip", saverClipPath)
-            -- name the loader based on saver 
-            local 
+            -- name the loader x set clipath based on saver 
+            local saverName = saver:GetAttrs().TOOLS_Name
+            loader:SetAttrs({
+                TOOLS_Name = "Loader_" .. saverName,
+                TOOLS_ClipPath = saverClipPath,
+            })
+            loader:SetInput("Loop", 1) -- Enable looping
+            print("created loader for " .. saver:GetAttrs().TOOLS_Name .. " at path " .. saverClipPath)
+        else
+            print("No Clip Path found for " .. saver:GetAttrs().TOOLS_Name)
+        end
+    end
 end
-
 
 comp:Unlock()
 
 print("All Selected Savers now have Loaders")
+
