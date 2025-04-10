@@ -19,8 +19,10 @@ for i, currentSaver in pairs(allSavers) do
     end
     if isSelected == false then
         currentSaver:SetAttrs({ ["TOOLB_PassThrough"] = true })
+        --print("Set " .. currentSaver.Name .. " to pass-through")
     end
 end
 
 comp:Unlock()
 
+print("All Unselected Savers have been turned off")
